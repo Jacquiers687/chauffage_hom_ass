@@ -15,65 +15,51 @@ blueprint:
       selector:
         entity:
           domain: switch
-source_url: https://github.com/Jacquiers687/code_home_Assistant/blob/main/blueprints/automation/PWM_horaire.yaml
+          
+  source_url: https://github.com/Jacquiers687/code_home_Assistant/blob/main/blueprints/automation/PWM_horaire.yaml
 mode: restart
+
 variables:
-  essai : 40
+  annee : 2022
  
 trigger:
+ # >HC de la nuit
   - platform: time
-    at: '00:15:00'
+    at: '02:00:00'
   - platform: time
-    at: '01:15:00'
+    at: '03:30:00'
   - platform: time
-    at: '02:15:00'
+    at: '05:00:00'
   - platform: time
-    at: '03:15:00'
+    at: '06:30:00'
+ #<HP du matin
   - platform: time
-    at: '04:15:00'
+    at: '08:30:00'
   - platform: time
-    at: '05:15:00'
+    at: '10:30:00'
+ # >HC du midi 
   - platform: time
-    at: '06:15:00'
+    at: '12:30:00'
   - platform: time
-    at: '07:15:00'
+    at: '14:00:00'
+ #<HP apres midi
   - platform: time
-    at: '08:15:00'
+    at: '16:00:00'
   - platform: time
-    at: '09:15:00'
+    at: '18:00:00'
   - platform: time
-    at: '10:15:00'
+    at: '20:00:00'
   - platform: time
-    at: '11:15:00'
+    at: '22:00:00'
   - platform: time
-    at: '12:15:00'
-  - platform: time
-    at: '13:15:00'
-  - platform: time
-    at: '14:15:00'
-  - platform: time
-    at: '15:15:00'
-  - platform: time
-    at: '16:15:00'
-  - platform: time
-    at: '17:15:00'
-  - platform: time
-    at: '18:15:00'
-  - platform: time
-    at: '19:15:00'
-  - platform: time
-    at: '20:15:00'
-  - platform: time
-    at: '21:15:00'
-  - platform: time
-    at: '22:15:00'
-  - platform: time
-    at: '23:15:00'
+    at: '00:01:00'
+
     
 # heures creuses de 1h30 à 07h30 ; et 12h30 à 14h30
-# l'idée de base est de déclencher une demande toutes les heures (24 top)
-# le top heure creuse est 2h, 3h 4h 5h 6h 7h - 13h 14h  
-  
+# l'idée de base serait de déclencher un top proportionnel toutes les heures (24 top)
+# Pour accumuler davantage pendant les heures creuses,
+#   on va lancer propotionellement plus de top pendant les heures creuses que pendant les heures pleine.
+# ( 6 top pendant les heures creuses; et 7 top pendant les heures pleines 
 action:
   - alias: Impulsion de longueur calculée
     variables:
