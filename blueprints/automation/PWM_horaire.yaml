@@ -15,6 +15,7 @@ blueprint:
       selector:
         entity:
           domain: switch
+source_url: https://github.com/Jacquiers687/code_home_Assistant/blob/main/blueprints/automation/PWM_horaire.yaml
 mode: restart
 variables:
   essai : 40
