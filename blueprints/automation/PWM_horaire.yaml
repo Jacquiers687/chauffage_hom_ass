@@ -1,0 +1,104 @@
+blueprint:
+  name: PWM_horaire
+  description: cadencement chauffage en mode PWM différent en fonction des heures creuses
+  domain: automation
+  input:   
+    cons_puiss:
+      name: Puissance
+      description: pourcentage de puissance (input_number)
+      selector:
+        entity:
+          domain: input_number
+    sor_chauff:
+      name: Chauffage
+      description: Commande du chauffage (switch)
+      selector:
+        entity:
+          domain: switch
+mode: restart
+variables:
+  essai : 40
+ 
+trigger:
+  - platform: time
+    at: '00:15:00'
+  - platform: time
+    at: '01:15:00'
+  - platform: time
+    at: '02:15:00'
+  - platform: time
+    at: '03:15:00'
+  - platform: time
+    at: '04:15:00'
+  - platform: time
+    at: '05:15:00'
+  - platform: time
+    at: '06:15:00'
+  - platform: time
+    at: '07:15:00'
+  - platform: time
+    at: '08:15:00'
+  - platform: time
+    at: '09:15:00'
+  - platform: time
+    at: '10:15:00'
+  - platform: time
+    at: '11:15:00'
+  - platform: time
+    at: '12:15:00'
+  - platform: time
+    at: '13:15:00'
+  - platform: time
+    at: '14:15:00'
+  - platform: time
+    at: '15:15:00'
+  - platform: time
+    at: '16:15:00'
+  - platform: time
+    at: '17:15:00'
+  - platform: time
+    at: '18:15:00'
+  - platform: time
+    at: '19:15:00'
+  - platform: time
+    at: '20:15:00'
+  - platform: time
+    at: '21:15:00'
+  - platform: time
+    at: '22:15:00'
+  - platform: time
+    at: '23:15:00'
+    
+# heures creuses de 1h30 à 07h30 ; et 12h30 à 14h30
+# l'idée de base est de déclencher une demande toutes les heures (24 top)
+# le top heure creuse est 2h, 3h 4h 5h 6h 7h - 13h 14h  
+  
+action:
+  - alias: Impulsion de longueur calculée
+    variables:
+      cons_puiss: !input 'cons_puiss'
+      consigne: '{{states(cons_puiss)}}'
+      secondes : '{{ (((consigne * 3600)/100) | round(0)) }}'
+      temps_chauffe:  '{{secondes}}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{(temps_chauffe >= 180) and (temps_chauffe <= 2000) }}'
+      sequence:
+      - service: switch.turn_on
+        target:
+            entity_id: !input 'sor_chauff'   
+      - delay: '{{temps_chauffe}}' 
+      - service: switch.turn_off
+        target:
+            entity_id: !input 'sor_chauff'     
+    default:
+    - service: switch.turn_off
+      target:
+         entity_id: !input 'sor_chauff'   
+            
+            
+            
+            
+            
+            
