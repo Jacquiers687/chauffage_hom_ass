@@ -50,7 +50,7 @@ blueprint:
         entity:
           domain: input_number
  
-  source_url: https://github.com/Jacquiers687/code_home_Assistant/blob/main/blueprints/automation/Puissance_chauffe.yaml
+  source_url: https://github.com/Jacquiers687/code_home_Assistant/blueprints/automation/Puiss_chauf.yam
 
 
 
