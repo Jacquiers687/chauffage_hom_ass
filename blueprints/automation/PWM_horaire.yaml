@@ -15,8 +15,14 @@ blueprint:
       selector:
         entity:
           domain: switch
-          
+    puiss_actuelle:
+      name: Derniere consigne de puissance appliquée
+      description: derniere puissance appliquée (input_number)
+      selector:
+        entity:
+          domain: input_number     
   source_url: https://github.com/Jacquiers687/code_home_Assistant/blob/main/blueprints/automation/PWM_horaire.yaml
+
 mode: restart
 
 variables:
@@ -34,9 +40,7 @@ trigger:
     at: '06:30:00'
  #<HP du matin
   - platform: time
-    at: '08:30:00'
-  - platform: time
-    at: '10:30:00'
+    at: '09:30:00'
  # >HC du midi 
   - platform: time
     at: '12:30:00'
@@ -44,15 +48,11 @@ trigger:
     at: '14:00:00'
  #<HP apres midi
   - platform: time
-    at: '16:00:00'
-  - platform: time
-    at: '18:00:00'
+    at: '17:00:00'
   - platform: time
     at: '20:00:00'
   - platform: time
-    at: '22:00:00'
-  - platform: time
-    at: '00:01:00'
+    at: '23:00:00'
 
     
 # heures creuses de 1h30 à 07h30 ; et 12h30 à 14h30
@@ -60,6 +60,9 @@ trigger:
 # Pour accumuler davantage pendant les heures creuses,
 #   on va lancer propotionellement plus de top pendant les heures creuses que pendant les heures pleine.
 # ( 6 top pendant les heures creuses; et 7 top pendant les heures pleines 
+
+
+
 action:
   - alias: Impulsion de longueur calculée
     variables:
@@ -67,10 +70,19 @@ action:
       consigne: '{{states(cons_puiss)}}'
       secondes : '{{ (((consigne * 3600)/100) | round(0)) }}'
       temps_chauffe:  '{{secondes}}'
+  - alias: Met à jour la puissance prise en compte
+    service: input_number.set_value
+    target:
+      entity_id: !input 'puiss_actuelle'
+    data:
+      value: '{{consigne}}'
+  - alias: creation de l'impulsion
+    variables:
+      test: !input 'cons_puiss'
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{(temps_chauffe >= 180) and (temps_chauffe <= 2000) }}'
+        value_template: '{{(temps_chauffe >= 180) and (temps_chauffe <= 2800) }}'
       sequence:
       - service: switch.turn_on
         target:
@@ -78,14 +90,21 @@ action:
       - delay: '{{temps_chauffe}}' 
       - service: switch.turn_off
         target:
-            entity_id: !input 'sor_chauff'     
+            entity_id: !input 'sor_chauff'   
+      - service: input_number.set_value
+        target:
+          entity_id: !input 'puiss_actuelle'
+        data:
+          value: '{{0}}'               
     default:
     - service: switch.turn_off
       target:
          entity_id: !input 'sor_chauff'   
-            
-            
-            
-            
+    - service: input_number.set_value
+      target:
+        entity_id: !input 'puiss_actuelle'
+      data:
+        value: '{{0}}'       
+             
             
             
